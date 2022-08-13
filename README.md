@@ -53,9 +53,9 @@ The following commands are available with administrator status：
 * on_findEvent/stop_findEvent
   * Switch message query
 * delete_event_mode [Mode code]
-  * Delete message mode (all:all/nopicture:no picture)
+  * Delete message mode (all: all/ nopicture :no picture)
 * voice_mode [Mode code]
-  * Delete message mode (all:all/nopicture:no picture)
+  * Robot voice mode (all: all/ only: members in the list receive)
 * ask_log [yyyymmdd]
   * Download system log
   
