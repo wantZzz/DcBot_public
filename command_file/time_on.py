@@ -76,25 +76,24 @@ class time_on(Cog_Extension):
                 if not new_hotmeme[counter]["contest"]["name"] in keys:
                   break
                   
-                if counter >= len(new_hotmeme):#if all hot meme can't public in Non-nsfw channel
-                  await self.channel.send("早安安!Wah! 最近似乎太多色色的了...")
-                  await asyncio.sleep(60)
-                  continue
-                
-              hotest = new_hotmeme[0]
+              if counter >= len(new_hotmeme):#if all hot meme can't public in Non-nsfw channel
+                await self.channel.send("早安安!Wah! 最近似乎太多色色的了...")
 
-              if hotest["contest"]["name"] in keys:
-                id_num = keys.index(hotest["contest"]["name"])+1
               else:
-                id_num = "冷門類別無收錄"
-  
-              embed = discord.Embed(title=f"{hotest['title']} | 每日梗圖",color=0xffffff)
-              embed.add_field(name='類別:', value=f'{hotest["contest"]["name"]} ({id_num})')
-              embed.add_field(name='來源:', value=hotest["url"])
-              embed.set_image(url=hotest["src"])
-              embed.set_footer(text=f"powerby:https://memes.tw/ | {hotest['created_at']['date_time_string']}",icon_url='https://memes.tw/ms-icon-310x310.png')
+                hotest = new_hotmeme[counter]
 
-              await self.channel.send("早安安!Wah!", embed=embed)
+                if hotest["contest"]["name"] in keys:
+                  id_num = keys.index(hotest["contest"]["name"])+1
+                else:
+                  id_num = "冷門類別無收錄"
+  
+                embed = discord.Embed(title=f"{hotest['title']} | 每日梗圖",color=0xffffff)
+                embed.add_field(name='類別:', value=f'{hotest["contest"]["name"]} ({id_num})')
+                embed.add_field(name='來源:', value=hotest["url"])
+                embed.set_image(url=hotest["src"])
+                embed.set_footer(text=f"powerby:https://memes.tw/ | {hotest['created_at']['date_time_string']}",icon_url='https://memes.tw/ms-icon-310x310.png')
+
+                await self.channel.send("早安安!Wah!", embed=embed)
 
             else:
               await self.channel.send("早安安!Wah!")
