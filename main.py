@@ -90,7 +90,7 @@ async def on_command_error(ctx, error, /) -> None:
   traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 @bot.command()
-async def ping(ctx,*cmd):#ping
+async def ping(ctx,*cmd):
   mode = 'None'
   if len(cmd) > 0:
     if cmd[0] == '-w':
@@ -107,19 +107,26 @@ async def ping(ctx,*cmd):#ping
 
   else:
     embed=discord.Embed(title="pong", color=0xff9ebb)
-
+  
+  embed.add_field(name="⌛訊號延遲", value=f'└ {round(bot.latency, 1)}(ms)', inline=False)
   embed.add_field(name="🔌啟動時間", value='└ '+open_time, inline=False)
   embed.add_field(name="📡系統版本", value='└ '+discord.__version__, inline=False)
 
-  if mode == 'w':#pinging apis and webs
+  if mode == 'w':
     waifu_ping_de = pinging("https://api.waifu.im/random/?selected_tags=waifu")
     meme_ping_de = pinging('https://memes.tw')
+    crawl_ping_de = pinging('http://wannazzz.pythonanywhere.com')
 
     web_delay_str = '├ **randomwaifu(waifu.im):** ' + waifu_ping_de + '\n└ **randomeme(memes.tw):** ' + meme_ping_de
 
     embed.add_field(name="📨網路來回回應耗時", value=web_delay_str, inline=False)
 
-  elif mode == 'm':#check server load
+    crawl_delay_str = '└ '+crawl_ping_de
+
+    embed.add_field(name="📨網頁爬蟲來回回應耗時", value=crawl_delay_str, inline=False)
+
+  elif mode == 'm':
+
     cpu_percent_str = '└ '+str(psutil.cpu_percent(2))+'%'
     
     embed.add_field(name="💽CPU使用率", value=cpu_percent_str, inline=False)
@@ -133,8 +140,8 @@ async def ping(ctx,*cmd):#ping
     ram_str = '└ '+data_size_convert(virtual_memory.used) + ' /' + data_size_convert(virtual_memory.total)
     
     embed.add_field(name="🎛RAM占用", value=ram_str, inline=False)
-  
-  embed.set_footer(text="此機器人由 wannaZzz#8989 維護")
+   
+  embed.set_footer(text="此機器人由 wannaZzz#8989 製作")
 
   await ctx.send(embed=embed)
 
