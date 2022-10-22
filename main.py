@@ -32,7 +32,7 @@ tree = bot.tree
 from command_file.time_on import time_on
 log_name = time_on.log_name
 
-with open('users_datafile/state.json') as f:
+with open('users_datafile/state.json',encoding="utf-8") as f:
   state = json.load(f)
 
 close_time = 0
@@ -48,7 +48,7 @@ except:
 
 def load_state():
   global state
-  with open('users_datafile/state.json') as f:
+  with open('users_datafile/state.json',encoding="utf-8") as f:
     state = json.load(f)
 
 @bot.event
