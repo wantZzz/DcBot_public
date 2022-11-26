@@ -76,9 +76,9 @@ class random_barview(View):
     #print(model)
 
     if Classification == "nsfw":
-      url = f"https://api.waifu.im/random/?selected_tags={model}&is_nsfw=true"
+      url = f"https://api.waifu.im/search/?selected_tags={model}&is_nsfw=true"
     else:
-      url = f"https://api.waifu.im/random/?selected_tags={model}&is_nsfw=false"
+      url = f"https://api.waifu.im/search/?selected_tags={model}&is_nsfw=false"
 
     r = requests.get(url)
   
@@ -279,25 +279,75 @@ class random_barview(View):
         await asyncio.sleep(0.2)
           
         #print(f"height: {height}\nwidth: {width}\n{'https:'+imageUrl}\n\n{'https://yandex.ru'+linkUrl}\n")
+      
+      proportion = 0.5
         
       sum_height = 0
       for image_json in image_list:
         sum_height += image_json['height']
       
-      Specification_height = round(sum_height/len(image_list)*0.5)
+      target_specification_height = round(sum_height/len(image_list)*proportion)
       
       sum_width = 0 + len(image_list)*4 + 16
       for image_json in image_list:
-        sum_width += image_json['width']*(Specification_height/image_json['height'])
+        sum_width += image_json['width']*(target_specification_height/image_json['height'])
       
       background_width = round(sum_width/4)
         
-      background_image = Image.new('RGB',(background_width+8,(Specification_height*4)+20),(255,255,255))
-      
       nowwidth_point = 4
       line = 0
       
+      line_images = []
+      line_images_line = []
+      line_sizes_data = []
+      
+      Specification_height_sum = 0
+      width_line_sum = 0
+      
       for image_k in image_list:
+        if nowwidth_point + int(image_k['width']*(target_specification_height/image_k['height'])) > background_width:
+          line_sizes_data.append(round(((background_width - 8) - 4*(len(line_images_line) - 1))*round(target_specification_height/width_line_sum, 5)))
+          Specification_height_sum += round(((background_width - 8) - 4*(len(line_images_line) - 1))*round(target_specification_height/width_line_sum, 5))
+          width_line_sum = 0
+        
+          nowwidth_point = 4
+          line_images.append(line_images_line)
+          line_images_line = []
+          
+          line += 1
+      
+          if line > 4:
+            break
+            
+        line_images_line.append(image_k)
+        width_line_sum += target_specification_height*image_k['width']/image_k['height']
+        nowwidth_point += int(image_k['width']*(target_specification_height/image_k['height'])) + 4
+        
+      Specification_height = Specification_height_sum + 20
+      
+      background_image = Image.new('RGB',(background_width+8,Specification_height),(48, 49, 54))
+      
+      line = 0
+      nowhight_point = 4
+      nowwidth_point = 4
+      
+      for images_l in line_images:
+        for image_k in images_l:
+          image_paste = Image.open(image_k['path'])
+
+          image_paste = image_paste.resize((int(image_k['width']*(line_sizes_data[line]/image_k['height'])),line_sizes_data[line]),Image.NEAREST)
+
+          image_paste = circle_corner(image_paste, radii=10)
+              
+          background_image.paste(image_paste,(nowwidth_point,nowhight_point),image_paste)
+          
+          nowwidth_point += int(image_k['width']*(line_sizes_data[line]/image_k['height'])) + 4
+          
+        nowhight_point += line_sizes_data[line] + 4
+        line += 1
+        nowwidth_point = 4
+      
+      """for image_k in image_list:
         image_paste = Image.open(image_k['path'])
         #print(int(image_k['width']*(Specification_height/image_k['height'])))
         #print(Specification_height)
@@ -315,7 +365,7 @@ class random_barview(View):
         background_image.paste(image_paste,(nowwidth_point,line*(Specification_height+4)+4),image_paste)
       
         nowwidth_point += int(image_k['width']*(Specification_height/image_k['height'])) + 4
-        #await asyncio.sleep(0.2)
+        #await asyncio.sleep(0.2)"""
       
       background_image.save(f'picture/yandex/output.png')
 
@@ -610,9 +660,9 @@ class waifu(Cog_Extension):
       
     if model in waifu_tag['tags_list'] or (model in waifu_tag['nsfw_list'] and ctx.channel.id in r_18_id):
       if ctx.channel.id in r_18_id and waifu_model:
-        url = f"https://api.waifu.im/random/?selected_tags={model}&is_nsfw=true"
+        url = f"https://api.waifu.im/search/?selected_tags={model}&is_nsfw=true"
       else:
-        url = f"https://api.waifu.im/random/?selected_tags={model}&is_nsfw=false"
+        url = f"https://api.waifu.im/search/?selected_tags={model}&is_nsfw=false"
       #'http://api.waifu.im/sfw/waifu/'
         
       r = requests.get(url)
